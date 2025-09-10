@@ -59,57 +59,18 @@
     <div id="checkout-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-xl shadow-2xl p-6 sm:p-8 w-full max-w-md transform transition-all scale-95 duration-300">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-gray-800">Finalizar Compra</h2>
+                <h2 class="text-2xl font-bold text-gray-800">Pagamento</h2>
                 <button id="close-modal-btn" class="text-gray-500 hover:text-gray-700 focus:outline-none">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
-
-            <!-- Informações do Livro -->
-            <div id="checkout-item-details" class="flex items-center space-x-4 mb-6">
-                <img id="modal-book-image" src="" alt="Capa do livro" class="w-16 h-24 object-cover rounded-md shadow-lg">
-                <div>
-                    <h3 id="modal-book-title" class="text-lg font-semibold text-gray-900"></h3>
-                    <p id="modal-book-price" class="text-gray-600 font-medium"></p>
-                </div>
+            <div class="flex flex-col items-center">
+                <p class="text-lg font-semibold mb-3">Escaneie o QR Code para pagar via Pix:</p>
+                <!-- Imagem do QR Code -->
+                <img src="https://i.imgur.com/fBSRAIe.png" alt="QR Code Pix" class="w-48 h-48 rounded-lg mt-4 shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/192x192/000000/FFFFFF?text=QR+Code+Indisponível';">
             </div>
-
-            <!-- Opções de Pagamento -->
-            <div class="mb-6">
-                <p class="text-lg font-semibold mb-3">Selecione a forma de pagamento:</p>
-                <div class="space-y-3">
-                    <label class="flex items-center p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition">
-                        <input type="radio" name="payment-method" value="Pix" class="form-radio h-5 w-5 text-indigo-600 transition" checked>
-                        <span class="ml-3 text-gray-800">Pix</span>
-                    </label>
-                    <label class="flex items-center p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition">
-                        <input type="radio" name="payment-method" value="Cartão" class="form-radio h-5 w-5 text-indigo-600">
-                        <span class="ml-3 text-gray-800">Cartão de Crédito/Débito</span>
-                    </label>
-                    <label class="flex items-center p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition">
-                        <input type="radio" name="payment-method" value="Dinheiro" class="form-radio h-5 w-5 text-indigo-600">
-                        <span class="ml-3 text-gray-800">Dinheiro (Retirada no local)</span>
-                    </label>
-                </div>
-            </div>
-
-            <!-- Botão de Finalizar -->
-            <button id="finalize-purchase-btn" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 transition transform hover:scale-105">
-                Finalizar Compra
-            </button>
-        </div>
-    </div>
-
-    <!-- Modal de Confirmação -->
-    <div id="confirmation-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-xl shadow-2xl p-6 sm:p-8 w-full max-w-sm text-center">
-            <h2 id="confirmation-title" class="text-2xl font-bold mb-4"></h2>
-            <p id="confirmation-message" class="text-gray-700 mb-6"></p>
-            <button id="close-confirmation-btn" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 transition">
-                Ok
-            </button>
         </div>
     </div>
 
@@ -140,7 +101,7 @@
             {
                 id: 4,
                 title: "Gibis do Cascão",
-                price: 10.00,
+                price: 30.00,
                 imageUrl: "https://i.imgur.com/G1B0ex7.png",
                 description: "Diversas histórias divertidas com o personagem mais limpinho da Turma da Mônica."
             },
@@ -176,18 +137,9 @@
         const detailsBookDescription = document.getElementById('details-book-description');
         const detailsBookPrice = document.getElementById('details-book-price');
         const detailsBuyBtn = document.getElementById('details-buy-btn');
-
+        
         const checkoutModal = document.getElementById('checkout-modal');
         const closeModalBtn = document.getElementById('close-modal-btn');
-        const modalBookImage = document.getElementById('modal-book-image');
-        const modalBookTitle = document.getElementById('modal-book-title');
-        const modalBookPrice = document.getElementById('modal-book-price');
-        const finalizePurchaseBtn = document.getElementById('finalize-purchase-btn');
-
-        const confirmationModal = document.getElementById('confirmation-modal');
-        const confirmationTitle = document.getElementById('confirmation-title');
-        const confirmationMessage = document.getElementById('confirmation-message');
-        const closeConfirmationBtn = document.getElementById('close-confirmation-btn');
 
         // Renderiza os livros na página
         function renderBooks() {
@@ -208,16 +160,16 @@
                         </button>
                     </div>
                 `;
-                
+
                 // Evento para abrir o modal de detalhes
                 bookCard.querySelector('.book-image-container').addEventListener('click', () => openDetailsModal(book));
-                
+
                 // Evento para abrir o modal de checkout
                 bookCard.querySelector('.buy-btn').addEventListener('click', (event) => {
-                    event.stopPropagation(); // Evita que o clique no botão ative o evento da imagem
-                    openCheckoutModal(book);
+                    event.stopPropagation();
+                    openCheckoutModal();
                 });
-                
+
                 bookGrid.appendChild(bookCard);
             });
         }
@@ -231,67 +183,26 @@
             detailsModal.dataset.bookId = book.id;
             detailsModal.classList.remove('hidden');
         }
-        
+
         // Fecha o modal de detalhes do livro
         closeDetailsBtn.addEventListener('click', () => {
             detailsModal.classList.add('hidden');
         });
-
+        
         // Evento de clique no botão "Comprar" dentro do modal de detalhes
         detailsBuyBtn.addEventListener('click', () => {
-            const bookId = detailsModal.dataset.bookId;
-            const book = books.find(b => b.id == bookId);
-            openCheckoutModal(book);
             detailsModal.classList.add('hidden');
+            openCheckoutModal();
         });
 
-        // Abre o modal de checkout com os dados do livro selecionado
-        function openCheckoutModal(book) {
-            modalBookImage.src = book.imageUrl;
-            modalBookTitle.textContent = book.title;
-            modalBookPrice.textContent = `R$ ${book.price.toFixed(2)}`;
-            checkoutModal.dataset.bookId = book.id;
+        // Abre o modal de checkout
+        function openCheckoutModal() {
             checkoutModal.classList.remove('hidden');
         }
 
         // Fecha o modal de checkout
         closeModalBtn.addEventListener('click', () => {
             checkoutModal.classList.add('hidden');
-        });
-
-        // Finaliza a compra
-        finalizePurchaseBtn.addEventListener('click', () => {
-            const selectedMethod = document.querySelector('input[name="payment-method"]:checked').value;
-            let title = '';
-            let message = '';
-
-            switch(selectedMethod) {
-                case 'Pix':
-                    title = "Pagamento via Pix";
-                    message = "Seu pedido foi recebido! O código Pix será enviado para o seu e-mail para que o pagamento seja realizado.";
-                    break;
-                case 'Cartão':
-                    title = "Pagamento via Cartão";
-                    message = "Seu pagamento foi processado com sucesso! Um e-mail de confirmação foi enviado.";
-                    break;
-                case 'Dinheiro':
-                    title = "Pagamento em Dinheiro";
-                    message = "Seu pedido foi realizado com sucesso! Aguardamos você para a retirada e pagamento do livro em nossa loja física.";
-                    break;
-            }
-
-            // Mostra o modal de confirmação
-            confirmationTitle.textContent = title;
-            confirmationMessage.textContent = message;
-            confirmationModal.classList.remove('hidden');
-
-            // Fecha o modal de checkout
-            checkoutModal.classList.add('hidden');
-        });
-
-        // Fecha o modal de confirmação
-        closeConfirmationBtn.addEventListener('click', () => {
-            confirmationModal.classList.add('hidden');
         });
 
         // Inicializa a renderização dos livros
