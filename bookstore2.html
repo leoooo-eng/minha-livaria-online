@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Livraria Online</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center p-4">
+
+    <!-- Header -->
+    <header class="w-full max-w-5xl text-center py-8">
+        <h1 class="text-4xl sm:text-5xl font-extrabold text-black mb-2">Mundo da Leitura</h1>
+        <p class="text-lg text-gray-700">Explore nosso catálogo e encontre sua próxima leitura.</p>
+    </header>
+
+    <!-- Main Content - Book Grid -->
+    <main class="w-full max-w-5xl">
+        <div id="book-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-4">
+            <!-- Livros serão injetados aqui via JavaScript -->
+        </div>
+    </main>
+
+    <!-- Modal de Detalhes do Livro -->
+    <div id="details-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-xl shadow-2xl p-6 sm:p-8 w-full max-w-lg max-h-[90vh] overflow-y-auto transform transition-all scale-95 duration-300">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Detalhes do Livro</h2>
+                <button id="close-details-btn" class="text-gray-500 hover:text-gray-700 focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-6 sm:space-y-0 sm:space-x-8">
+                <img id="details-book-image" src="" alt="Capa do livro" class="w-48 h-64 object-cover rounded-md shadow-lg">
+                <div class="text-center sm:text-left">
+                    <h3 id="details-book-title" class="text-xl sm:text-2xl font-bold text-gray-900 mb-2"></h3>
+                    <p id="details-book-description" class="text-gray-700 mb-4"></p>
+                    <p id="details-book-price" class="text-3xl font-bold text-indigo-600 mb-4"></p>
+                    <button id="details-buy-btn" class="w-full sm:w-auto bg-indigo-600 text-white font-bold py-3 px-8 rounded-xl hover:bg-indigo-700 transition transform hover:scale-105">
+                        Comprar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Checkout -->
+    <div id="checkout-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-xl shadow-2xl p-6 sm:p-8 w-full max-w-md transform transition-all scale-95 duration-300">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Pagamento</h2>
+                <button id="close-modal-btn" class="text-gray-500 hover:text-gray-700 focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="flex flex-col items-center">
+                <p class="text-lg font-semibold mb-3">Escaneie o QR Code para pagar via Pix:</p>
+                <!-- Imagem do QR Code -->
+                <img src="https://i.imgur.com/fBSRAIe.png" alt="QR Code Pix" class="w-48 h-48 rounded-lg mt-4 shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/192x192/000000/FFFFFF?text=QR+Code+Indisponível';">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados dos livros
+        const books = [
+            {
+                id: 1,
+                title: "Adolescências, Juventudes e Participação",
+                price: 10.00,
+                imageUrl: "https://i.imgur.com/7expm1g.png",
+                description: "Um estudo aprofundado sobre o papel do jovem na sociedade."
+            },
+            {
+                id: 2,
+                title: "Olhos de Azeviche",
+                price: 10.00,
+                imageUrl: "https://i.imgur.com/z8Lk8HA.png",
+                description: "Uma história emocionante sobre o amor e a superação."
+            },
+            {
+                id: 3,
+                title: "Palavras de Encantamento",
+                price: 10.00,
+                imageUrl: "https://i.imgur.com/ozasY0h.png",
+                description: "Poesias que transportam o leitor para um mundo mágico."
+            },
+            {
+                id: 4,
+                title: "Gibis do Cascão",
+                price: 30.00,
+                imageUrl: "https://i.imgur.com/G1B0ex7.png",
+                description: "Diversas histórias divertidas com o personagem mais limpinho da Turma da Mônica."
+            },
+            {
+                id: 5,
+                title: "Manoel de Barros",
+                price: 10.00,
+                imageUrl: "https://i.imgur.com/waPqQOz.png",
+                description: "Poemas que revelam a simplicidade e a profundidade das coisas do cotidiano."
+            },
+            {
+                id: 7,
+                title: "O Corpo Fala",
+                price: 20.00,
+                imageUrl: "https://i.imgur.com/nQnznHD.png",
+                description: "Um guia prático sobre a linguagem corporal e a comunicação não verbal."
+            },
+            {
+                id: 8,
+                title: "A Dieta Ideal",
+                price: 15.00,
+                imageUrl: "https://i.imgur.com/aw1TJtg.png",
+                description: "Um livro sobre como manter uma alimentação saudável e equilibrada."
+            }
+        ];
+
+        // Referências aos elementos do DOM
+        const bookGrid = document.getElementById('book-grid');
+        const detailsModal = document.getElementById('details-modal');
+        const closeDetailsBtn = document.getElementById('close-details-btn');
+        const detailsBookImage = document.getElementById('details-book-image');
+        const detailsBookTitle = document.getElementById('details-book-title');
+        const detailsBookDescription = document.getElementById('details-book-description');
+        const detailsBookPrice = document.getElementById('details-book-price');
+        const detailsBuyBtn = document.getElementById('details-buy-btn');
+        
+        const checkoutModal = document.getElementById('checkout-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+
+        // Renderiza os livros na página
+        function renderBooks() {
+            bookGrid.innerHTML = '';
+            books.forEach(book => {
+                const bookCard = document.createElement('div');
+                bookCard.className = "bg-white rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-2 transition-transform duration-300 overflow-hidden cursor-pointer";
+                bookCard.innerHTML = `
+                    <div class="h-64 sm:h-80 w-full overflow-hidden book-image-container">
+                        <img src="${book.imageUrl}" alt="Capa do livro ${book.title}" class="w-full h-full object-cover transition-transform duration-300 hover:scale-110" onerror="this.onerror=null;this.src='https://placehold.co/400x600/E5E7EB/4B5563?text=Imagem+N%C3%A3o+Dispon%C3%ADvel';">
+                    </div>
+                    <div class="p-4 flex flex-col items-center text-center">
+                        <h3 class="text-xl font-semibold text-gray-900 line-clamp-2">${book.title}</h3>
+                        <p class="text-gray-600 mt-1 mb-3">${book.description}</p>
+                        <p class="text-2xl font-bold text-gray-800 mb-4">R$ ${book.price.toFixed(2)}</p>
+                        <button class="buy-btn w-full bg-indigo-600 text-white font-bold py-2 px-4 rounded-xl hover:bg-indigo-700 transition-colors">
+                            Comprar
+                        </button>
+                    </div>
+                `;
+
+                // Evento para abrir o modal de detalhes
+                bookCard.querySelector('.book-image-container').addEventListener('click', () => openDetailsModal(book));
+
+                // Evento para abrir o modal de checkout
+                bookCard.querySelector('.buy-btn').addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    openCheckoutModal();
+                });
+
+                bookGrid.appendChild(bookCard);
+            });
+        }
+
+        // Abre o modal de detalhes do livro
+        function openDetailsModal(book) {
+            detailsBookImage.src = book.imageUrl;
+            detailsBookTitle.textContent = book.title;
+            detailsBookDescription.textContent = book.description;
+            detailsBookPrice.textContent = `R$ ${book.price.toFixed(2)}`;
+            detailsModal.dataset.bookId = book.id;
+            detailsModal.classList.remove('hidden');
+        }
+
+        // Fecha o modal de detalhes do livro
+        closeDetailsBtn.addEventListener('click', () => {
+            detailsModal.classList.add('hidden');
+        });
+        
+        // Evento de clique no botão "Comprar" dentro do modal de detalhes
+        detailsBuyBtn.addEventListener('click', () => {
+            detailsModal.classList.add('hidden');
+            openCheckoutModal();
+        });
+
+        // Abre o modal de checkout
+        function openCheckoutModal() {
+            checkoutModal.classList.remove('hidden');
+        }
+
+        // Fecha o modal de checkout
+        closeModalBtn.addEventListener('click', () => {
+            checkoutModal.classList.add('hidden');
+        });
+
+        // Inicializa a renderização dos livros
+        document.addEventListener('DOMContentLoaded', renderBooks);
+    </script>
+</body>
+</html>
